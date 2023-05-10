@@ -1,62 +1,70 @@
 package ru.netology.quamid59;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class GameTest {
+    Player player_1 = new Player(1, "Player_1", 15);
+    Player player_2 = new Player(2, "Player_2", 20);
+    Player player_3 = new Player(3, "Player_3", 30);
+    Player player_4 = new Player(4, "Player_4", 2);
+    Player player_5 = new Player(5, "Player_5", 30);
+    Game game = new Game();
 
-    private Game game;
-    private Player player1;
-    private Player player2;
-    private Player player3;
+    @Test
+    public void firstPlayerWon() {
+        game.register(player_1);
+        game.register(player_2);
 
-    @BeforeEach
-    public void setUp() {
-        game = new Game();
-        player1 = new Player(1, "John", 100);
-        player2 = new Player(2, "Alice", 50);
-        player3 = new Player(3, "Bob", 80);
+        int expected = 1;
+        int actual = game.round("Player_2", "Player_1");
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    public void testRoundPlayerNotFound() {
-        game.register(player1);
-        Assertions.assertThrows(NotRegisteredException.class, () -> game.round("John", "Alice"));
+    public void secondPlayerWon() {
+        game.register(player_1);
+        game.register(player_2);
+
+        int expected = 2;
+        int actual = game.round("Player_1", "Player_2");
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    public void testRoundTie() throws NotRegisteredException {
-        game.register(player1);
-        game.register(player2);
-        int result = game.round("John", "Alice");
-        Assertions.assertEquals(1, result);
+    public void playersWereEqual() {
+        game.register(player_3);
+        game.register(player_5);
+
+        int expected = 0;
+        int actual = game.round("Player_3", "Player_5");
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    public void testRoundPlayer1Wins() throws NotRegisteredException {
-        game.register(player1);
-        game.register(player2);
-        int result = game.round("John", "Alice");
-        Assertions.assertEquals(1, result);
+    public void firstPlayerNotRegistered() {
+        game.register(player_1);
+        game.register(player_2);
+
+        Assertions.assertThrows(NotRegisteredException.class, () -> game.round("Player_1", "Player_3"));
     }
 
     @Test
-    public void testRoundPlayer2Wins() throws NotRegisteredException {
-        game.register(player1);
-        game.register(player3);
-        int result = game.round("John", "Bob");
-        Assertions.assertEquals(1, result);
+    public void secondPlayerNotRegistered() {
+        game.register(player_1);
+        game.register(player_2);
+
+        Assertions.assertThrows(NotRegisteredException.class, () -> game.round("Player_2", "Player_4"));
     }
 
     @Test
-    public void testGetId() {
-        Player player = new Player(1, "Alice", 10);
-        int expectedId = 1;
-        int actualId = player.getId();
-        Assertions.assertEquals(expectedId, actualId);
+    public void bothPlayersNotRegistered() {
+        game.register(player_4);
+        game.register(player_5);
+
+        Assertions.assertThrows(NotRegisteredException.class, () -> game.round("Player_3", "Player_2"));
     }
 }
